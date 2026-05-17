@@ -1,0 +1,40 @@
+[project]
+name = "sensor-platform-test"
+version = "0.1.0"
+description = "Educational MQTT and protobuf sensor platform demo for Linux embedded computers."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "paho-mqtt>=2.1.0",
+    "pyqtgraph>=0.13.7",
+    "PySide6>=6.8.0",
+    "protobuf>=5.29.0",
+]
+
+[project.scripts]
+generate-protobuf = "sensor_platform.tools.generate_protobuf:main"
+sensor-platform-sensor = "sensor_platform.sensor:main"
+sensor-platform-processor = "sensor_platform.processor:main"
+sensor-platform-monitor = "sensor_platform.monitor_cli:main"
+sensor-platform-monitor-gui = "sensor_platform.monitor_qt:main"
+
+[dependency-groups]
+dev = [
+    "grpcio-tools>=1.68.0",
+    "pytest>=8.3.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sensor_platform"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

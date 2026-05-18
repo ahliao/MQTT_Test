@@ -248,9 +248,9 @@ Each part should run as a separate Python command so the architecture is visible
 Example commands after implementation:
 
 ```bash
-uv run python -m sensor_platform.sensor --mqtt-host localhost --sample-rate-hz 2
-uv run python -m sensor_platform.processor --mqtt-host localhost
-uv run python -m sensor_platform.monitor_cli --mqtt-host localhost
+uv run python -m sensor_platform.sensors.sensor --mqtt-host localhost --sample-rate-hz 2
+uv run python -m sensor_platform.processors.processor --mqtt-host localhost
+uv run python -m sensor_platform.monitors.monitor_cli --mqtt-host localhost
 ```
 
 This makes it easy to open three terminals and observe the flow from sensor to processor to monitor.

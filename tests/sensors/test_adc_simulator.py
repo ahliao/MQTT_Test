@@ -1,8 +1,10 @@
+"""Tests for the low-rate ADC simulator and voltage conversion."""
+
 from __future__ import annotations
 
 import pytest
 
-from sensor_platform.adc_simulator import SimulatedAdc, raw_to_voltage
+from sensor_platform.sensors.adc_simulator import SimulatedAdc, raw_to_voltage
 from sensor_platform.config import ADC_MAX_VALUE, ADC_REFERENCE_VOLTAGE
 
 
@@ -20,6 +22,7 @@ def test_raw_to_voltage_rejects_out_of_range_value() -> None:
 
 
 def test_simulated_adc_sample_stays_in_expected_range() -> None:
+    # The exact simulated value is random, so test the physical bounds instead.
     adc = SimulatedAdc(channel=2)
     sample = adc.read()
 

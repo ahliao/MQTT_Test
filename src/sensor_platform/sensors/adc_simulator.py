@@ -1,3 +1,5 @@
+"""Small ADC simulator used before wiring the project to real hardware."""
+
 from __future__ import annotations
 
 import math
@@ -10,6 +12,8 @@ from sensor_platform.config import ADC_MAX_VALUE, ADC_REFERENCE_VOLTAGE
 
 @dataclass(frozen=True)
 class SimulatedAdcSample:
+    """One simulated ADC result in both raw counts and volts."""
+
     channel: int
     raw_value: int
     voltage: float
@@ -45,6 +49,7 @@ class SimulatedAdc:
         self._started_at = time.monotonic()
 
     def read(self) -> SimulatedAdcSample:
+        """Generate the next sample from a smooth waveform plus small random noise."""
         elapsed = time.monotonic() - self._started_at
         wave = (math.sin(elapsed) + 1.0) / 2.0
         noise = random.uniform(-self.noise_fraction, self.noise_fraction)

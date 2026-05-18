@@ -1,8 +1,10 @@
+"""Tests for pure low-rate processing logic."""
+
 from __future__ import annotations
 
 import pytest
 
-from sensor_platform.processor_logic import MovingAverage, classify_voltage
+from sensor_platform.processors.processor_logic import MovingAverage, classify_voltage
 
 
 def test_moving_average_uses_available_values() -> None:
@@ -14,6 +16,7 @@ def test_moving_average_uses_available_values() -> None:
 
 
 def test_moving_average_drops_old_values() -> None:
+    # With a window of 2, adding 5 drops the original 1 from the average.
     average = MovingAverage(window_size=2)
 
     average.add(1.0)

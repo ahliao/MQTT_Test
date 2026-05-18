@@ -1,12 +1,15 @@
+"""Tests for protobuf serialization and parse error handling."""
+
 from __future__ import annotations
 
 import pytest
 
 from sensor_platform.generated import sensor_platform_pb2
-from sensor_platform.protobuf_helpers import parse_adc_reading, serialize_message
+from sensor_platform.core.protobuf_helpers import parse_adc_reading, serialize_message
 
 
 def test_adc_reading_round_trip() -> None:
+    # Round-trip tests confirm the generated protobuf class and helper agree.
     original = sensor_platform_pb2.AdcReading(
         sensor_id="test-sensor",
         timestamp_ms=123456789,

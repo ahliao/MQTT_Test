@@ -123,19 +123,19 @@ Open three terminals in the project directory.
 Terminal 1, run the sensor:
 
 ```bash
-uv run python -m sensor_platform.sensor --mqtt-host localhost --sample-rate-hz 2
+uv run python -m sensor_platform.sensors.sensor --mqtt-host localhost --sample-rate-hz 2
 ```
 
 Terminal 2, run the processor:
 
 ```bash
-uv run python -m sensor_platform.processor --mqtt-host localhost
+uv run python -m sensor_platform.processors.processor --mqtt-host localhost
 ```
 
 Terminal 3, run the monitor:
 
 ```bash
-uv run python -m sensor_platform.monitor_cli --mqtt-host localhost
+uv run python -m sensor_platform.monitors.monitor_cli --mqtt-host localhost
 ```
 
 You should see the sensor publishing raw ADC values, the processor publishing moving averages, and the monitor showing the latest values.
@@ -145,7 +145,7 @@ You should see the sensor publishing raw ADC values, the processor publishing mo
 If your Windows and WSL setup supports Linux GUI apps, you can run the PySide6 monitor instead of the CLI monitor:
 
 ```bash
-uv run python -m sensor_platform.monitor_qt --mqtt-host localhost
+uv run python -m sensor_platform.gui.monitor_qt --mqtt-host localhost
 ```
 
 The GUI shows the same latest raw and processed values as the CLI monitor, plus a live voltage plot using `pyqtgraph`.

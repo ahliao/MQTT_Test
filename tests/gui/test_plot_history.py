@@ -1,8 +1,10 @@
+"""Tests for monitor plot history buffers."""
+
 from __future__ import annotations
 
 import pytest
 
-from sensor_platform.plot_history import PlotHistory
+from sensor_platform.gui.plot_history import PlotHistory
 
 
 def test_plot_history_stores_raw_voltage_series() -> None:
@@ -31,6 +33,7 @@ def test_plot_history_stores_moving_average_series() -> None:
 
 
 def test_plot_history_limits_points() -> None:
+    # The low-rate plot buffer uses a fixed point count to bound memory use.
     history = PlotHistory(max_points=2)
 
     history.add_raw(sensor_id="sensor-a", channel=0, timestamp_ms=1000, voltage=1.0)

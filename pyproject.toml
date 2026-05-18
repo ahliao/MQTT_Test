@@ -13,10 +13,12 @@ dependencies = [
 
 [project.scripts]
 generate-protobuf = "sensor_platform.tools.generate_protobuf:main"
-sensor-platform-sensor = "sensor_platform.sensor:main"
-sensor-platform-processor = "sensor_platform.processor:main"
-sensor-platform-monitor = "sensor_platform.monitor_cli:main"
-sensor-platform-monitor-gui = "sensor_platform.monitor_qt:main"
+sensor-platform-sensor = "sensor_platform.sensors.sensor:main"
+sensor-platform-high-rate-sensor = "sensor_platform.sensors.high_rate_sensor:main"
+sensor-platform-processor = "sensor_platform.processors.processor:main"
+sensor-platform-high-rate-processor = "sensor_platform.processors.high_rate_processor:main"
+sensor-platform-monitor = "sensor_platform.monitors.monitor_cli:main"
+sensor-platform-monitor-gui = "sensor_platform.gui.monitor_qt:main"
 
 [dependency-groups]
 dev = [

@@ -1,3 +1,5 @@
+"""Command-line helper for regenerating Python protobuf code."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -5,6 +7,7 @@ from pathlib import Path
 from grpc_tools import protoc
 
 
+# Resolve paths relative to the repository so the command works from any directory.
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 PROTO_DIR = PROJECT_ROOT / "proto"
 OUTPUT_DIR = PROJECT_ROOT / "src" / "sensor_platform" / "generated"
@@ -17,6 +20,7 @@ def main() -> None:
     init_file = OUTPUT_DIR / "__init__.py"
     init_file.touch(exist_ok=True)
 
+    # grpc_tools.protoc is the Python-packaged protobuf compiler.
     result = protoc.main(
         [
             "grpc_tools.protoc",

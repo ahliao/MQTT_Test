@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15sensor_platform.proto\x12\x0esensorplatform\"j\n\nAdcReading\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x11\n\traw_value\x18\x04 \x01(\r\x12\x0f\n\x07voltage\x18\x05 \x01(\x01\"\x8c\x01\n\x10ProcessedReading\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x0f\n\x07voltage\x18\x04 \x01(\x01\x12\x1e\n\x16moving_average_voltage\x18\x05 \x01(\x01\x12\r\n\x05state\x18\x06 \x01(\t\"\\\n\rServiceStatus\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15sensor_platform.proto\x12\x0esensorplatform\"j\n\nAdcReading\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x11\n\traw_value\x18\x04 \x01(\r\x12\x0f\n\x07voltage\x18\x05 \x01(\x01\"\x8c\x01\n\x10ProcessedReading\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x0f\n\x07voltage\x18\x04 \x01(\x01\x12\x1e\n\x16moving_average_voltage\x18\x05 \x01(\x01\x12\r\n\x05state\x18\x06 \x01(\t\"\xad\x01\n\x0e\x41\x64\x63SampleBatch\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x1a\n\x12start_timestamp_us\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x16\n\x0esample_rate_hz\x18\x04 \x01(\r\x12\x14\n\x0csample_count\x18\x05 \x01(\r\x12\x19\n\x11reference_voltage\x18\x06 \x01(\x01\x12\x12\n\nraw_values\x18\x07 \x03(\r\"\xfa\x01\n\x14ProcessedSampleBatch\x12\x11\n\tsensor_id\x18\x01 \x01(\t\x12\x1a\n\x12start_timestamp_us\x18\x02 \x01(\x03\x12\x0f\n\x07\x63hannel\x18\x03 \x01(\r\x12\x16\n\x0esample_rate_hz\x18\x04 \x01(\r\x12\x14\n\x0csample_count\x18\x05 \x01(\r\x12\x13\n\x0bmin_voltage\x18\x06 \x01(\x01\x12\x13\n\x0bmax_voltage\x18\x07 \x01(\x01\x12\x17\n\x0f\x61verage_voltage\x18\x08 \x01(\x01\x12\x13\n\x0brms_voltage\x18\t \x01(\x01\x12\x1c\n\x14\x64ownsampled_voltages\x18\n \x03(\x01\"\\\n\rServiceStatus\x12\x14\n\x0cservice_name\x18\x01 \x01(\t\x12\x14\n\x0ctimestamp_ms\x18\x02 \x01(\x03\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,6 +35,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ADCREADING']._serialized_end=147
   _globals['_PROCESSEDREADING']._serialized_start=150
   _globals['_PROCESSEDREADING']._serialized_end=290
-  _globals['_SERVICESTATUS']._serialized_start=292
-  _globals['_SERVICESTATUS']._serialized_end=384
+  _globals['_ADCSAMPLEBATCH']._serialized_start=293
+  _globals['_ADCSAMPLEBATCH']._serialized_end=466
+  _globals['_PROCESSEDSAMPLEBATCH']._serialized_start=469
+  _globals['_PROCESSEDSAMPLEBATCH']._serialized_end=719
+  _globals['_SERVICESTATUS']._serialized_start=721
+  _globals['_SERVICESTATUS']._serialized_end=813
 # @@protoc_insertion_point(module_scope)

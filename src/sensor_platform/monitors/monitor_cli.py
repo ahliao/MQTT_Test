@@ -1,3 +1,5 @@
+"""Terminal monitor for the low-rate sensor and processor streams."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,12 +10,13 @@ import time
 import paho.mqtt.client as mqtt
 
 from sensor_platform.config import MQTT_HOST, MQTT_PORT, PROCESSOR_RESULTS_TOPIC, SENSOR_READINGS_TOPIC
-from sensor_platform.monitor_state import MonitorState
-from sensor_platform.mqtt_client import create_client
-from sensor_platform.protobuf_helpers import parse_adc_reading, parse_processed_reading
+from sensor_platform.core.mqtt_client import create_client
+from sensor_platform.core.protobuf_helpers import parse_adc_reading, parse_processed_reading
+from sensor_platform.monitors.monitor_state import MonitorState
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Define display and broker options for the CLI monitor."""
     parser = argparse.ArgumentParser(description="Display live sensor and processor MQTT data.")
     parser.add_argument("--mqtt-host", default=MQTT_HOST)
     parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
@@ -24,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = build_parser().parse_args()
     state = MonitorState()
+    # MQTT callbacks and terminal rendering run concurrently, so protect shared state.
     lock = threading.Lock()
     client = create_client("monitor")
 
@@ -34,6 +38,7 @@ def main() -> None:
         reason_code: mqtt.ReasonCode,
         properties: mqtt.Properties | None,
     ) -> None:
+        # Subscribe to both raw and processed topics so one table can show both values.
         if reason_code.is_failure:
             print(f"Failed to connect to MQTT broker: {reason_code}")
             return
@@ -41,6 +46,7 @@ def main() -> None:
 
     def on_message(client: mqtt.Client, userdata: object, message: mqtt.MQTTMessage) -> None:
         try:
+            # Decode each topic into the matching protobuf type before updating state.
             with lock:
                 if message.topic == SENSOR_READINGS_TOPIC:
                     state.update_raw(parse_adc_reading(message.payload))
@@ -52,6 +58,7 @@ def main() -> None:
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect(args.mqtt_host, args.mqtt_port)
+    # The network loop runs in a background thread while this module redraws the terminal.
     client.loop_start()
 
     print("Starting monitor. Press Ctrl+C to stop.")
@@ -69,6 +76,7 @@ def main() -> None:
 
 
 def render_table(snapshots: list[object]) -> None:
+    """Redraw a simple table of the latest known values."""
     os.system("clear")
     print("Sensor Platform Monitor")
     print("MQTT topics: sensor/adc/readings, processor/adc/results")

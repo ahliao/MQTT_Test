@@ -19,6 +19,29 @@ message ProcessedReading {
   string state = 6;
 }
 
+message AdcSampleBatch {
+  string sensor_id = 1;
+  int64 start_timestamp_us = 2;
+  uint32 channel = 3;
+  uint32 sample_rate_hz = 4;
+  uint32 sample_count = 5;
+  double reference_voltage = 6;
+  repeated uint32 raw_values = 7;
+}
+
+message ProcessedSampleBatch {
+  string sensor_id = 1;
+  int64 start_timestamp_us = 2;
+  uint32 channel = 3;
+  uint32 sample_rate_hz = 4;
+  uint32 sample_count = 5;
+  double min_voltage = 6;
+  double max_voltage = 7;
+  double average_voltage = 8;
+  double rms_voltage = 9;
+  repeated double downsampled_voltages = 10;
+}
+
 message ServiceStatus {
   string service_name = 1;
   int64 timestamp_ms = 2;

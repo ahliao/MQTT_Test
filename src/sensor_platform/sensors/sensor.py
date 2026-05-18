@@ -1,9 +1,18 @@
+"""Low-rate sensor publisher.
+
+This service simulates one ADC channel, wraps each reading in a protobuf
+message, and publishes it to MQTT for the processor and monitors.
+"""
+
 from __future__ import annotations
 
 import argparse
 import time
 
-from sensor_platform.adc_simulator import SimulatedAdc
+from sensor_platform.core.mqtt_client import create_client
+from sensor_platform.core.protobuf_helpers import serialize_message
+from sensor_platform.core.time_utils import now_ms
+from sensor_platform.sensors.adc_simulator import SimulatedAdc
 from sensor_platform.config import (
     DEFAULT_CHANNEL,
     DEFAULT_SAMPLE_RATE_HZ,
@@ -13,12 +22,10 @@ from sensor_platform.config import (
     SENSOR_READINGS_TOPIC,
 )
 from sensor_platform.generated import sensor_platform_pb2
-from sensor_platform.mqtt_client import create_client
-from sensor_platform.protobuf_helpers import serialize_message
-from sensor_platform.time_utils import now_ms
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Define command-line options so the same code works locally or remotely."""
     parser = argparse.ArgumentParser(description="Publish simulated ADC readings over MQTT.")
     parser.add_argument("--mqtt-host", default=MQTT_HOST)
     parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
@@ -35,6 +42,7 @@ def main() -> None:
 
     adc = SimulatedAdc(channel=args.channel)
     client = create_client("sensor")
+    # The MQTT network loop runs in the background so this function can focus on sampling.
     client.connect(args.mqtt_host, args.mqtt_port)
     client.loop_start()
 
@@ -47,6 +55,7 @@ def main() -> None:
     try:
         while True:
             sample = adc.read()
+            # Protobuf gives the MQTT payload a clear typed structure.
             reading = sensor_platform_pb2.AdcReading(
                 sensor_id=args.sensor_id,
                 timestamp_ms=now_ms(),
@@ -54,6 +63,7 @@ def main() -> None:
                 raw_value=sample.raw_value,
                 voltage=sample.voltage,
             )
+            # MQTT payloads are bytes, so serialize the protobuf before publishing.
             client.publish(SENSOR_READINGS_TOPIC, serialize_message(reading))
             print(
                 f"sensor={reading.sensor_id} channel={reading.channel} "
@@ -63,6 +73,7 @@ def main() -> None:
     except KeyboardInterrupt:
         print("Stopping sensor publisher.")
     finally:
+        # Always close the MQTT connection cleanly when Ctrl+C stops the service.
         client.loop_stop()
         client.disconnect()
 

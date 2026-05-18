@@ -54,19 +54,19 @@ uv sync
 Run the sensor service:
 
 ```bash
-uv run python -m sensor_platform.sensor
+uv run python -m sensor_platform.sensors.sensor
 ```
 
 Run the processor service:
 
 ```bash
-uv run python -m sensor_platform.processor
+uv run python -m sensor_platform.processors.processor
 ```
 
 Run the CLI monitor:
 
 ```bash
-uv run python -m sensor_platform.monitor_cli
+uv run python -m sensor_platform.monitors.monitor_cli
 ```
 
 Run tests:
@@ -95,14 +95,14 @@ Without `uv`, you might do this:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m sensor_platform.sensor
+python -m sensor_platform.sensors.sensor
 ```
 
 With `uv`, the workflow becomes:
 
 ```bash
 uv sync
-uv run python -m sensor_platform.sensor
+uv run python -m sensor_platform.sensors.sensor
 ```
 
 `uv run` makes sure the command runs inside the project environment.

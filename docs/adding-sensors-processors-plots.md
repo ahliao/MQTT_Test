@@ -104,6 +104,8 @@ sensor/vibration/batches
 processor/vibration/spectrum
 ```
 
+See `docs/message-design-guidelines.md` for detailed topic naming rules.
+
 ## Step 3: Add Protobuf Messages
 
 Edit `proto/sensor_platform.proto`.
@@ -132,6 +134,9 @@ Important protobuf rules:
 - Add new fields with new numbers.
 - Keep message names clear.
 - Keep units in field names when useful, such as `temperature_c`, `voltage`, or `timestamp_ms`.
+- Use low-rate sample messages for slow streams and batch messages for high-rate streams.
+
+See `docs/message-design-guidelines.md` before adding or changing protobuf messages.
 
 After changing the schema, regenerate Python code:
 
@@ -584,8 +589,9 @@ Use this checklist before the GUI refactor exists:
 9. Use the service template pattern from `docs/service-template-pattern.md`.
 10. Add the new stream to `streams.py`.
 11. Update `gui/monitor_qt.py` to display the new stream.
-12. Update docs and README commands.
-13. Run `uv run pytest` and `uv run ruff check .`.
+12. Check the message design rules in `docs/message-design-guidelines.md`.
+13. Update docs and README commands.
+14. Run `uv run pytest` and `uv run ruff check .`.
 
 ## Design Advice
 

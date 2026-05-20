@@ -121,6 +121,7 @@ Regenerate protobuf files any time `proto/sensor_platform.proto` changes.
 - `docs/pyproject-explained.md`: beginner explanation of `pyproject.toml`
 - `docs/uv-workflow.md`: how `uv` works in this project
 - `docs/protobuf-overview.md`: protobuf explanation and tradeoffs
+- `docs/message-design-guidelines.md`: MQTT topic and protobuf message design rules
 - `docs/wsl-ubuntu-setup.md`: WSL Ubuntu setup instructions
 - `docs/qt-gui-monitor.md`: PySide6 GUI monitor usage
 - `docs/high-rate-sensor-batching.md`: high-rate protobuf batching example

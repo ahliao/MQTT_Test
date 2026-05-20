@@ -28,7 +28,7 @@ Current roadmap status:
 | --- | --- | --- |
 | Phase 1.1: Stream Registry | Complete | Added shared stream registry, stream listing command, tests, and docs. |
 | Phase 1.2: Service Template Pattern | Complete | Added shared CLI/logging helpers, refactored existing services, added tests, and documented service skeletons. |
-| Phase 1.3: Message Design Guidelines | Not started | Should follow the service template work. |
+| Phase 1.3: Message Design Guidelines | Complete | Added topic, protobuf field, compatibility, batch, status, and native publisher guidelines. |
 | Phase 2: More Flexible GUI | Not started | Depends on the stream registry and benefits from service/template consistency. |
 | Phase 3: Sensor Templates | Not started | UART/replay templates should come after Phase 1.2. |
 | Phase 4: Rust and C++ Sensor Support | Not started | Native examples should reuse the same stream/message contracts. |
@@ -106,7 +106,26 @@ Avoid turning this into a heavy base-class framework early. Start with simple he
 
 ### 1.3 Message Design Guidelines
 
+Status: complete.
+
 Expand protobuf documentation with concrete schema patterns.
+
+Implemented files:
+
+```text
+docs/message-design-guidelines.md
+```
+
+Completed work:
+
+- Added MQTT topic naming conventions.
+- Added protobuf message and field naming conventions.
+- Documented timestamp and unit naming rules.
+- Documented field-number compatibility and reserved-field guidance.
+- Added low-rate sample and high-rate batch schema patterns.
+- Added status and error message patterns.
+- Added native Rust/C++ publisher compatibility guidance.
+- Linked the guide from protobuf and extension documentation.
 
 Deliverables:
 

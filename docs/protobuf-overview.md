@@ -158,3 +158,5 @@ To keep the project approachable:
 - Generate protobuf files automatically.
 - Add helper functions for serialization and deserialization.
 - Print decoded values in the CLI monitor so the binary format is still easy to observe.
+
+For concrete topic naming, field naming, units, batch patterns, status messages, and compatibility rules, see `docs/message-design-guidelines.md`.

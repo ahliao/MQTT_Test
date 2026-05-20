@@ -14,31 +14,33 @@ from sensor_platform.core.protobuf_helpers import serialize_message
 from sensor_platform.core.time_utils import now_ms
 from sensor_platform.sensors.adc_simulator import SimulatedAdc
 from sensor_platform.config import (
-    DEFAULT_CHANNEL,
     DEFAULT_SAMPLE_RATE_HZ,
-    DEFAULT_SENSOR_ID,
-    MQTT_HOST,
-    MQTT_PORT,
     SENSOR_READINGS_TOPIC,
 )
+from sensor_platform.core.cli import (
+    add_logging_arguments,
+    add_mqtt_arguments,
+    add_sensor_identity_arguments,
+    require_positive_float,
+)
+from sensor_platform.core.service_logging import configure_logging
 from sensor_platform.generated import sensor_platform_pb2
 
 
 def build_parser() -> argparse.ArgumentParser:
     """Define command-line options so the same code works locally or remotely."""
     parser = argparse.ArgumentParser(description="Publish simulated ADC readings over MQTT.")
-    parser.add_argument("--mqtt-host", default=MQTT_HOST)
-    parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
-    parser.add_argument("--sensor-id", default=DEFAULT_SENSOR_ID)
-    parser.add_argument("--channel", type=int, default=DEFAULT_CHANNEL)
+    add_mqtt_arguments(parser)
+    add_sensor_identity_arguments(parser)
+    add_logging_arguments(parser)
     parser.add_argument("--sample-rate-hz", type=float, default=DEFAULT_SAMPLE_RATE_HZ)
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
-    if args.sample_rate_hz <= 0:
-        raise SystemExit("--sample-rate-hz must be greater than 0")
+    configure_logging(args.log_level)
+    require_positive_float(args.sample_rate_hz, "--sample-rate-hz")
 
     adc = SimulatedAdc(channel=args.channel)
     client = create_client("sensor")

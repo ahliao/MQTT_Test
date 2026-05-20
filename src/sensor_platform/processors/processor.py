@@ -11,9 +11,11 @@ from collections import defaultdict
 
 import paho.mqtt.client as mqtt
 
-from sensor_platform.config import MQTT_HOST, MQTT_PORT, PROCESSOR_RESULTS_TOPIC, SENSOR_READINGS_TOPIC
+from sensor_platform.config import PROCESSOR_RESULTS_TOPIC, SENSOR_READINGS_TOPIC
+from sensor_platform.core.cli import add_logging_arguments, add_mqtt_arguments, require_positive_int
 from sensor_platform.core.mqtt_client import create_client
 from sensor_platform.core.protobuf_helpers import parse_adc_reading, serialize_message
+from sensor_platform.core.service_logging import configure_logging
 from sensor_platform.core.time_utils import now_ms
 from sensor_platform.generated import sensor_platform_pb2
 from sensor_platform.processors.processor_logic import MovingAverage, classify_voltage
@@ -22,14 +24,16 @@ from sensor_platform.processors.processor_logic import MovingAverage, classify_v
 def build_parser() -> argparse.ArgumentParser:
     """Expose broker and processing settings as command-line options."""
     parser = argparse.ArgumentParser(description="Process ADC readings from MQTT.")
-    parser.add_argument("--mqtt-host", default=MQTT_HOST)
-    parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
+    add_mqtt_arguments(parser)
+    add_logging_arguments(parser)
     parser.add_argument("--window-size", type=int, default=5)
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
+    configure_logging(args.log_level)
+    require_positive_int(args.window_size, "--window-size")
     # Each sensor/channel gets its own moving-average state.
     averages: defaultdict[tuple[str, int], MovingAverage] = defaultdict(
         lambda: MovingAverage(window_size=args.window_size)

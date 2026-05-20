@@ -29,3 +29,9 @@ def test_gui_streams_include_current_monitor_topics() -> None:
     assert streams_by_name[RAW_ADC_STREAM].topic == SENSOR_READINGS_TOPIC
     assert streams_by_name[PROCESSED_ADC_STREAM].topic == PROCESSOR_RESULTS_TOPIC
     assert streams_by_name[HIGH_RATE_PROCESSED_ADC_STREAM].topic == HIGH_RATE_PROCESSOR_RESULTS_TOPIC
+
+
+def test_gui_streams_use_shared_registry_config() -> None:
+    for stream in GUI_STREAMS:
+        assert hasattr(stream, "kind")
+        assert isinstance(stream.stream_kind, str)

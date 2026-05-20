@@ -98,6 +98,12 @@ Generate Python protobuf code with:
 uv run generate-protobuf
 ```
 
+List the MQTT/protobuf streams known to the project with:
+
+```bash
+uv run sensor-platform-list-streams
+```
+
 Generated files are written under:
 
 ```text
@@ -109,6 +115,9 @@ Regenerate protobuf files any time `proto/sensor_platform.proto` changes.
 ## Documentation
 
 - `docs/project-plan.md`: project plan and implementation direction
+- `docs/project-roadmap.md`: next-step roadmap for GUI, sensors, native services, and deployment docs
+- `docs/phase-1-2-service-template-plan.md`: implementation plan for shared service templates
+- `docs/service-template-pattern.md`: service skeletons and shared CLI helper usage
 - `docs/pyproject-explained.md`: beginner explanation of `pyproject.toml`
 - `docs/uv-workflow.md`: how `uv` works in this project
 - `docs/protobuf-overview.md`: protobuf explanation and tradeoffs
@@ -118,3 +127,4 @@ Regenerate protobuf files any time `proto/sensor_platform.proto` changes.
 - `docs/adding-sensors-processors-plots.md`: how to extend the project with new streams
 - `docs/remote-mqtt-monitoring.md`: secure remote MQTT broker setup
 - `docs/docker-on-embedded-linux.md`: Docker tradeoffs for later consideration
+- `docs/lattepanda-iota-boot-setup.md`: LattePanda IOTA Ubuntu boot setup with systemd

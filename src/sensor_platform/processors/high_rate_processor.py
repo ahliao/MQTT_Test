@@ -9,11 +9,11 @@ import paho.mqtt.client as mqtt
 from sensor_platform.config import (
     HIGH_RATE_PROCESSOR_RESULTS_TOPIC,
     HIGH_RATE_SENSOR_BATCHES_TOPIC,
-    MQTT_HOST,
-    MQTT_PORT,
 )
+from sensor_platform.core.cli import add_logging_arguments, add_mqtt_arguments, require_positive_int
 from sensor_platform.core.mqtt_client import create_client
 from sensor_platform.core.protobuf_helpers import parse_adc_sample_batch, serialize_message
+from sensor_platform.core.service_logging import configure_logging
 from sensor_platform.generated import sensor_platform_pb2
 from sensor_platform.sensors.high_rate_batch import summarize_batch
 
@@ -21,16 +21,16 @@ from sensor_platform.sensors.high_rate_batch import summarize_batch
 def build_parser() -> argparse.ArgumentParser:
     """Allow the plot downsampling size to be changed without code edits."""
     parser = argparse.ArgumentParser(description="Process high-rate ADC batches from MQTT.")
-    parser.add_argument("--mqtt-host", default=MQTT_HOST)
-    parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
+    add_mqtt_arguments(parser)
+    add_logging_arguments(parser)
     parser.add_argument("--max-downsampled-points", type=int, default=200)
     return parser
 
 
 def main() -> None:
     args = build_parser().parse_args()
-    if args.max_downsampled_points <= 0:
-        raise SystemExit("--max-downsampled-points must be greater than 0")
+    configure_logging(args.log_level)
+    require_positive_int(args.max_downsampled_points, "--max-downsampled-points")
 
     client = create_client("high-rate-processor")
 

@@ -7,16 +7,20 @@ import time
 
 from sensor_platform.config import (
     ADC_REFERENCE_VOLTAGE,
-    DEFAULT_CHANNEL,
     DEFAULT_HIGH_RATE_BATCH_SIZE,
     DEFAULT_HIGH_RATE_SAMPLE_RATE_HZ,
     DEFAULT_SENSOR_ID,
     HIGH_RATE_SENSOR_BATCHES_TOPIC,
-    MQTT_HOST,
-    MQTT_PORT,
+)
+from sensor_platform.core.cli import (
+    add_logging_arguments,
+    add_mqtt_arguments,
+    add_sensor_identity_arguments,
+    require_positive_int,
 )
 from sensor_platform.core.mqtt_client import create_client
 from sensor_platform.core.protobuf_helpers import serialize_message
+from sensor_platform.core.service_logging import configure_logging
 from sensor_platform.core.time_utils import now_us
 from sensor_platform.generated import sensor_platform_pb2
 from sensor_platform.sensors.high_rate_batch import generate_raw_batch
@@ -27,10 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Publish high-rate simulated ADC samples as protobuf batches."
     )
-    parser.add_argument("--mqtt-host", default=MQTT_HOST)
-    parser.add_argument("--mqtt-port", type=int, default=MQTT_PORT)
-    parser.add_argument("--sensor-id", default=f"{DEFAULT_SENSOR_ID}-high-rate")
-    parser.add_argument("--channel", type=int, default=DEFAULT_CHANNEL)
+    add_mqtt_arguments(parser)
+    add_sensor_identity_arguments(parser, default_sensor_id=f"{DEFAULT_SENSOR_ID}-high-rate")
+    add_logging_arguments(parser)
     parser.add_argument("--sample-rate-hz", type=int, default=DEFAULT_HIGH_RATE_SAMPLE_RATE_HZ)
     parser.add_argument("--batch-size", type=int, default=DEFAULT_HIGH_RATE_BATCH_SIZE)
     return parser
@@ -38,10 +41,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    if args.sample_rate_hz <= 0:
-        raise SystemExit("--sample-rate-hz must be greater than 0")
-    if args.batch_size <= 0:
-        raise SystemExit("--batch-size must be greater than 0")
+    configure_logging(args.log_level)
+    require_positive_int(args.sample_rate_hz, "--sample-rate-hz")
+    require_positive_int(args.batch_size, "--batch-size")
 
     client = create_client("high-rate-sensor")
     client.connect(args.mqtt_host, args.mqtt_port)

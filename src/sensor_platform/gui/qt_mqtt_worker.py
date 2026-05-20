@@ -23,7 +23,7 @@ class MqttWorker(QObject):
         *,
         mqtt_host: str,
         mqtt_port: int,
-        streams: list[GuiStreamConfig] | None = None,
+        streams: list[GuiStreamConfig] | tuple[GuiStreamConfig, ...] | None = None,
     ) -> None:
         super().__init__()
         self._mqtt_host = mqtt_host

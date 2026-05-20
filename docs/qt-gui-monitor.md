@@ -70,7 +70,8 @@ MonitorWindow
 Important files:
 
 - `src/sensor_platform/gui/monitor_qt.py`: main PySide6 window
-- `src/sensor_platform/gui/config.py`: configured MQTT topics and protobuf parsers
+- `src/sensor_platform/streams.py`: shared MQTT topics, protobuf parsers, and stream metadata
+- `src/sensor_platform/gui/config.py`: GUI-visible view of the shared stream registry
 - `src/sensor_platform/gui/qt_mqtt_worker.py`: MQTT worker that subscribes from GUI config and emits decoded messages
 - `src/sensor_platform/gui/plot_history.py`: rolling data history for plots
 - `src/sensor_platform/sensors/high_rate_sensor.py`: high-rate batch publisher
@@ -79,17 +80,24 @@ Important files:
 
 ## Config-Driven Streams
 
-The GUI MQTT subscription layer is configured by `src/sensor_platform/gui/config.py`.
+The GUI MQTT subscription layer is based on the shared registry in `src/sensor_platform/streams.py`. `src/sensor_platform/gui/config.py` filters that registry down to streams the GUI displays today.
 
-Each `GuiStreamConfig` defines:
+Each `StreamConfig` defines:
 
 - stream name
 - display name
 - MQTT topic
 - protobuf parser
 - stream kind
+- default visibility
 
 The MQTT worker uses this config to subscribe and parse messages. The main GUI window still owns the display-specific table and plot handlers.
+
+List the registered streams with:
+
+```bash
+uv run sensor-platform-list-streams
+```
 
 ## WSL Notes
 

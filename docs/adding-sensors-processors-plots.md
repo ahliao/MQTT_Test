@@ -177,6 +177,7 @@ src/sensor_platform/sensors/temperature_sensor.py
 The sensor service should:
 
 - parse command-line options
+- use shared CLI helpers from `src/sensor_platform/core/cli.py`
 - connect to MQTT
 - read or simulate sensor data
 - create a protobuf message
@@ -187,6 +188,7 @@ Skeleton:
 
 ```python
 from sensor_platform.config import MQTT_HOST, MQTT_PORT, TEMPERATURE_READINGS_TOPIC
+from sensor_platform.core.cli import add_mqtt_arguments, add_logging_arguments
 from sensor_platform.generated import sensor_platform_pb2
 from sensor_platform.core.mqtt_client import create_client
 from sensor_platform.core.protobuf_helpers import serialize_message
@@ -205,6 +207,8 @@ def main() -> None:
     )
     client.publish(TEMPERATURE_READINGS_TOPIC, serialize_message(reading))
 ```
+
+See `docs/service-template-pattern.md` for the recommended full sensor service shape.
 
 Add a script entry in `pyproject.toml`:
 
@@ -317,12 +321,12 @@ sensor-platform-temperature-processor = "sensor_platform.processors.temperature_
 
 ## Step 8: Add GUI Support
 
-The GUI now has a configuration-driven MQTT subscription and parsing layer.
+The project now has a shared stream registry that describes known MQTT topics and protobuf parsers.
 
 The central file is:
 
 ```text
-src/sensor_platform/gui/config.py
+src/sensor_platform/streams.py
 ```
 
 That file defines:
@@ -332,39 +336,40 @@ That file defines:
 - MQTT topics
 - protobuf parser functions
 - stream kind metadata
+- whether a stream is monitored by default
 
 Example from the current project:
 
 ```python
-GuiStreamConfig(
+StreamConfig(
     name=HIGH_RATE_PROCESSED_ADC_STREAM,
     display_name="High-rate processed ADC batches",
     topic=HIGH_RATE_PROCESSOR_RESULTS_TOPIC,
     parser=parse_processed_sample_batch,
-    stream_kind="high_rate_processed_batch",
+    kind=StreamKind.HIGH_RATE_PROCESSED_BATCH,
 )
 ```
 
-To add a new GUI stream, first add a new config entry to `GUI_STREAMS`.
+To add a new stream, first add a new config entry to `STREAMS`.
 
 Example:
 
 ```python
 TEMPERATURE_PROCESSED_STREAM = "temperature_processed"
 
-GUI_STREAMS = [
+STREAMS = (
     ...,
-    GuiStreamConfig(
+    StreamConfig(
         name=TEMPERATURE_PROCESSED_STREAM,
         display_name="Processed temperature readings",
         topic=TEMPERATURE_RESULTS_TOPIC,
         parser=parse_processed_temperature_reading,
-        stream_kind="low_rate_processed",
+        kind=StreamKind.LOW_RATE_PROCESSED,
     ),
-]
+)
 ```
 
-After that, `MqttWorker` automatically subscribes to the topic and parses the protobuf payload.
+After that, the GUI can subscribe to the topic and parse the protobuf payload through the shared registry. Streams with `default_visible=False` stay registered but are not monitored by the GUI by default.
 
 The GUI display layer is still partly hard-coded. It explicitly knows how to display:
 
@@ -381,7 +386,7 @@ To display a new configured stream today, update:
 
 Current manual steps:
 
-1. Add the stream config in `gui/config.py`.
+1. Add the stream config in `streams.py`.
 2. Add a handler branch in `MonitorWindow._handle_decoded_message()`.
 3. Add a handler method in `MonitorWindow`.
 4. Add a table or plot widget if the existing widgets do not fit.
@@ -389,28 +394,36 @@ Current manual steps:
 
 The important improvement is that MQTT subscription and protobuf parsing no longer need to be edited in `qt_mqtt_worker.py` for every new stream.
 
-## Current GUI Config Design
+## Current Stream Registry Design
 
-The current config describes each stream:
+The shared registry describes each stream:
 
 - MQTT topic
 - protobuf parser
 - display name
 - stream kind
+- default visibility
 
-Current config object:
+Current registry object:
 
 ```python
 @dataclass(frozen=True)
-class GuiStreamConfig:
+class StreamConfig:
     name: str
     display_name: str
     topic: str
     parser: Callable[[bytes], object]
-    stream_kind: str
+    kind: StreamKind
+    default_visible: bool = True
 ```
 
-The MQTT worker loops over these configs instead of hard-coding topics.
+The MQTT worker loops over GUI-visible stream configs instead of hard-coding topics.
+
+List registered streams with:
+
+```bash
+uv run sensor-platform-list-streams
+```
 
 ## Remaining GUI Expansion Plan
 
@@ -445,11 +458,13 @@ class PlotSeriesConfig:
 
 Status: implemented.
 
-Create `gui/config.py` and move topic/parser/display definitions into it.
+Create `streams.py` and move shared topic/parser/display definitions into it.
 
 First targets:
 
+- low-rate raw ADC stream
 - low-rate processed ADC stream
+- high-rate raw ADC batch stream
 - high-rate processed ADC batch stream
 
 The goal is not to make everything generic immediately. The goal is to gather stream metadata in one place.
@@ -549,6 +564,8 @@ The first refactor intentionally stopped before generic widgets:
 3. Made `MqttWorker` subscribe based on that config.
 4. Made `MqttWorker` emit a generic decoded-message signal.
 5. Kept the current table and plot widgets mostly as-is.
+6. Added `streams.py` as the shared stream registry.
+7. Added `sensor-platform-list-streams` to inspect registered streams.
 
 This gives a cleaner extension point without rewriting the whole GUI at once.
 
@@ -564,10 +581,11 @@ Use this checklist before the GUI refactor exists:
 6. Add pure processing logic and tests.
 7. Add the processor service module.
 8. Add script entries in `pyproject.toml`.
-9. Add the new stream to `gui/config.py`.
-10. Update `gui/monitor_qt.py` to display the new stream.
-11. Update docs and README commands.
-12. Run `uv run pytest` and `uv run ruff check .`.
+9. Use the service template pattern from `docs/service-template-pattern.md`.
+10. Add the new stream to `streams.py`.
+11. Update `gui/monitor_qt.py` to display the new stream.
+12. Update docs and README commands.
+13. Run `uv run pytest` and `uv run ruff check .`.
 
 ## Design Advice
 
